@@ -1,0 +1,32 @@
+{
+  "name": "weex-http",
+  "version": "1.0.0",
+  "description": "simple http lib for weex",
+  "devDependencies": {
+    "ts-loader": "^2.0.1",
+    "typescript": "^2.2.1",
+    "vue": "^2.1.10",
+    "vue-loader": "^11.1.2",
+    "vue-typescript-import-dts": "^3.0.1",
+    "webpack": "1.x"
+  },
+  "main": "dist/index.js",
+  "typings": "dist/types/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MMF-FE/weex-http.git"
+  },
+  "keywords": [
+    "weex",
+    "http"
+  ],
+  "author": "vfasky@gmail.com",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/MMF-FE/weex-http/issues"
+  },
+  "homepage": "https://github.com/MMF-FE/weex-http#readme"
+}
