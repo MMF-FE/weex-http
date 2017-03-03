@@ -3,17 +3,24 @@
   "version": "1.0.0",
   "description": "simple http lib for weex",
   "devDependencies": {
+    "istanbul": "^0.4.5",
+    "jsdom": "^9.11.0",
+    "mocha": "^3.2.0",
+    "mocha-jsdom": "^1.1.0",
     "ts-loader": "^2.0.1",
+    "ts-node": "^2.1.0",
     "typescript": "^2.2.1",
-    "vue": "^2.1.10",
+    "vue": "^2.2.1",
     "vue-loader": "^11.1.2",
     "vue-typescript-import-dts": "^3.0.1",
-    "webpack": "1.x"
+    "webpack": "1.x",
+    "weex-vue-render": "^0.10.0"
   },
   "main": "dist/index.js",
   "typings": "dist/types/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha -t 10000 test/*.test.js",
+    "test-cov": "istanbul cover --preserve-comments _mocha -- --reporter spec -t 10000 test/*.test.js --bail"
   },
   "repository": {
     "type": "git",

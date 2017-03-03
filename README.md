@@ -1,6 +1,9 @@
 # weex-http
 weex simple http lib
 
+[![Build Status](https://img.shields.io/travis/MMF-FE/weex-http.svg?style=flat-square)](https://travis-ci.org/MMF-FE/weex-http) 
+[![Coverage Status](https://img.shields.io/coveralls/MMF-FE/weex-http.svg?style=flat-square)](https://coveralls.io/r/MMF-FE/weex-http?branch=master)
+
 ## Installing
 
 ```

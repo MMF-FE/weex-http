@@ -1,4 +1,4 @@
-import { HttpOptions, Response } from './types';
+import { HttpOptions, Response, HttpConfig } from './types';
 export default class Http {
     options: HttpOptions;
     headers: {
@@ -9,14 +9,11 @@ export default class Http {
     constructor(options: HttpOptions);
     buildHeaders(): void;
     buildMethod(): void;
-    buildUrl(): string;
+    buildUrl(options: any): string;
     buildData(): string;
-    send(): Promise<Response>;
-    static config: {
-        timeout: number;
-        baseURL: string;
-        headers: {};
-    };
+    send(options: HttpConfig): Promise<Response>;
+    static _config: HttpConfig;
+    static config: HttpConfig;
     static _instance: Http;
     static buildMethod(method: any, url: any, data?: {}, options?: HttpOptions, instance?: Http): Promise<Response>;
     static create(options?: HttpOptions): {

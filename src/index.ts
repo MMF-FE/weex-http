@@ -6,7 +6,7 @@
 'use strict'
 
 import { setOptonsDefault, param } from './util'
-import { HttpOptions, Response } from './types'
+import { HttpOptions, Response, HttpConfig } from './types'
 const stream = weex.requireModule('stream')
 
 const methods = ['GET', 'DELETE', 'HEAD', 'POST', 'PUT', 'PATCH']
@@ -47,8 +47,9 @@ export default class Http {
         this.method = method
     }
 
-    buildUrl() {
-        return this.options.baseURL + this.options.url
+    buildUrl(options) {
+        return (options.hasOwnProperty('baseURL') ? options.baseURL : this.options.baseURL) + 
+               this.options.url
     }
 
     buildData() {
@@ -57,17 +58,23 @@ export default class Http {
         return sendData
     }
 
-    send(): Promise<Response> {
+    send(options: HttpConfig): Promise<Response> {
         this.buildHeaders()
         this.buildMethod()
         
-        let timeout = this.options.timeout
+        let timeout = options.hasOwnProperty('timeout') ? options.timeout : this.options.timeout
         let method = this.method
         let body = this.buildData()
-        let url = this.buildUrl()
-        let headers = this.headers
+        let url = this.buildUrl(options)
+        let headers = JSON.parse(JSON.stringify(this.headers))
 
-        if (buildUrlMemthods.indexOf(this.method) !== -1) {
+        if(options.headers) {
+            Object.keys(options.headers).forEach((key) => {
+                headers[key] = options.headers[key]
+            })
+        }
+
+        if (buildUrlMemthods.indexOf(this.method.toLocaleUpperCase()) === -1) {
             let link = url.indexOf('?') === -1 ? '?' : '&'
             url += link + body
             body = ''
@@ -102,14 +109,29 @@ export default class Http {
                     reject(response)
                 }
 
-            }, this.options.progress)
+            }, (args) => {
+                this.options.progress(args)
+            })
         })
     }
 
-    static config = {
-        timeout: 1000,
+    static _config: HttpConfig = {
+        timeout: 10000,
         baseURL: '',
         headers: {}
+    }
+
+    static get config() {
+        return this._config
+    }
+
+    static set config(options: HttpConfig) {
+        Object.keys(options).forEach((key) => {
+            this._config[key] = options[key]
+            if(this._instance) {
+                this._instance.options[key] = options[key]
+            }
+        })
     }
 
     static _instance: Http
@@ -118,19 +140,18 @@ export default class Http {
         
         if (!instance) {
             if (!this._instance) {
-                setOptonsDefault(options, this.config)
-                this._instance = new this(options)
+                this._instance = new this(this.config)
             }
             instance = this._instance
        
         }
-        Object.keys(options).forEach((key) => {
-            instance.options[key] = options[key]
-        })
+        
         instance.options.method = method
         instance.options.data = data
         instance.options.url = url
-        return instance.send()
+
+        return instance.send(options)
+        
     }
 
     static create(options: HttpOptions = {}): {

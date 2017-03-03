@@ -18,6 +18,14 @@ export interface HttpOptions {
     progress?: Function
 }
 
+export interface HttpConfig {
+    timeout?: number
+    headers?: {
+        [key: string]: string
+    }
+    baseURL?: string
+}
+
 export interface Response {
     status: number,
     ok: boolean,

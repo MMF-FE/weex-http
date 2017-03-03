@@ -9,6 +9,7 @@ module.exports = {
         filename: 'index.js',
         libraryTarget: 'commonjs2'
     },
+    devtool: 'source-map',
     resolve: {
         modulesDirectories: [
             path.resolve('./node_modules'),
