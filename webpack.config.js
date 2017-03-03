@@ -44,11 +44,11 @@ module.exports = {
             'process.env': 'production'
         }),
         // minify with dead-code elimination
-        new webpack.optimize.UglifyJsPlugin({
-            compress: {
-                warnings: false
-            }
-        }),
+        // new webpack.optimize.UglifyJsPlugin({
+        //     compress: {
+        //         warnings: false
+        //     }
+        // }),
         // optimize module ids by occurrence count
         new webpack.optimize.OccurrenceOrderPlugin()
     ]
