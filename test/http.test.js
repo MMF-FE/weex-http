@@ -28,51 +28,56 @@ describe('weex-http Test', () => {
         methods.forEach((method) => {
             let httpMethod = String(method).toLocaleLowerCase()
 
-            it(method, async () => {
+            it(method, (done) => {
                 let args = { test: 'weex-http' }
-                let res = await weexHttp[httpMethod]('/' + httpMethod, args)
-                let data = JSON.parse(res.data)
+                weexHttp[httpMethod]('/' + httpMethod, args).then((res) => {
+                    let data = JSON.parse(res.data)
 
-                let resData = data.args
+                    let resData = data.args
 
-                if(['POST', 'PUT', 'PATCH'].indexOf(method) !== -1) {
-                    resData = data.form
-                }
+                    if(['POST', 'PUT', 'PATCH'].indexOf(method) !== -1) {
+                        resData = data.form
+                    }
 
-                assert.equal(args.test, resData.test)
+                    assert.equal(args.test, resData.test)
+                    done()
+                }).catch(done)
             })
 
 
-            it(method + ' Array', async () => {
+            it(method + ' Array', (done) => {
                 let args = { test: ['weex-http', 'weex', 'vue'] }
-                let res = await weexHttp[httpMethod]('/' + httpMethod, args)
-                let data = JSON.parse(res.data)
+                weexHttp[httpMethod]('/' + httpMethod, args).then((res) => {
+                    let data = JSON.parse(res.data)
 
-                let resData = data.args
+                    let resData = data.args
 
-                if(['POST', 'PUT', 'PATCH'].indexOf(method) !== -1) {
-                    resData = data.form
-                }
+                    if(['POST', 'PUT', 'PATCH'].indexOf(method) !== -1) {
+                        resData = data.form
+                    }
 
-                assert.equal(args.test[2], resData['test[]'][2])
+                    assert.equal(args.test[2], resData['test[]'][2])
+                    done()
+                }).catch(done)
             })
 
-            it(method + ' Object', async () => {
+            it(method + ' Object',  (done) => {
                 let args = { 
                     test: {
                         obj: ['weex-http', 'weex', 'vue'] 
                     }
                 }
-                let res = await weexHttp[httpMethod]('/' + httpMethod, args)
-                let data = JSON.parse(res.data)
+                weexHttp[httpMethod]('/' + httpMethod, args).then((res) => {
+                    let data = JSON.parse(res.data)
 
-                let resData = data.args
+                    let resData = data.args
 
-                if(['POST', 'PUT', 'PATCH'].indexOf(method) !== -1) {
-                    resData = data.form
-                }
-                assert.equal(args.test.obj[2], resData['test[obj][]'][2])
-                
+                    if(['POST', 'PUT', 'PATCH'].indexOf(method) !== -1) {
+                        resData = data.form
+                    }
+                    assert.equal(args.test.obj[2], resData['test[obj][]'][2])
+                    done()
+                }).catch(done)
             })
         })
 
@@ -91,51 +96,57 @@ describe('weex-http Test', () => {
         methods.forEach((method) => {
             let httpMethod = String(method).toLocaleLowerCase()
 
-            it(method, async () => {
+            it(method, (done) => {
                 let args = { test: 'weex-http' }
-                let res = await http[httpMethod](httpMethod, args)
-                let data = JSON.parse(res.data)
+                http[httpMethod](httpMethod, args).then((res) => {
+                    
+                    let data = JSON.parse(res.data)
 
-                let resData = data.args
+                    let resData = data.args
 
-                if(['POST', 'PUT', 'PATCH'].indexOf(method) !== -1) {
-                    resData = data.form
-                }
+                    if(['POST', 'PUT', 'PATCH'].indexOf(method) !== -1) {
+                        resData = data.form
+                    }
 
-                assert.equal(args.test, resData.test)
+                    assert.equal(args.test, resData.test)
+                    done()
+                }).catch(done)
             })
 
 
-            it(method + ' Array', async () => {
+            it(method + ' Array', (done) => {
                 let args = { test: ['weex-http', 'weex', 'vue'] }
-                let res = await http[httpMethod](httpMethod, args)
-                let data = JSON.parse(res.data)
+                http[httpMethod](httpMethod, args).then((res) => {
+                    let data = JSON.parse(res.data)
 
-                let resData = data.args
+                    let resData = data.args
 
-                if(['POST', 'PUT', 'PATCH'].indexOf(method) !== -1) {
-                    resData = data.form
-                }
+                    if(['POST', 'PUT', 'PATCH'].indexOf(method) !== -1) {
+                        resData = data.form
+                    }
 
-                assert.equal(args.test[2], resData['test[]'][2])
+                    assert.equal(args.test[2], resData['test[]'][2])
+                    done()
+                }).catch(done)
             })
 
-            it(method + ' Object', async () => {
+            it(method + ' Object', (done) => {
                 let args = { 
                     test: {
                         obj: ['weex-http', 'weex', 'vue'] 
                     }
                 }
-                let res = await http[httpMethod](httpMethod, args)
-                let data = JSON.parse(res.data)
+                http[httpMethod](httpMethod, args).then((res) => {
+                    let data = JSON.parse(res.data)
 
-                let resData = data.args
+                    let resData = data.args
 
-                if(['POST', 'PUT', 'PATCH'].indexOf(method) !== -1) {
-                    resData = data.form
-                }
-                assert.equal(args.test.obj[2], resData['test[obj][]'][2])
-                
+                    if(['POST', 'PUT', 'PATCH'].indexOf(method) !== -1) {
+                        resData = data.form
+                    }
+                    assert.equal(args.test.obj[2], resData['test[obj][]'][2])
+                    done()
+                }).catch(done)
             })
         })
     })
