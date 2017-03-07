@@ -59,10 +59,17 @@ var instance = weexHttp.create({
 })
 ```
 
+## Options
+
+- timeout number `default: 10000` ms
+- headers any `default: {}`
+- transformRequest Function[] `default: []` 
+- transformHeaders Function[] `default: []` 
+- transformResponse Function[] `default: []` 
+
 ## Instance methods
 
 The available instance methods are listed below. The specified config will be merged with the instance config.
-
 
 weexHttp#get(url[, data[, config]])
 

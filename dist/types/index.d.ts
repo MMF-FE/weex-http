@@ -10,12 +10,13 @@ export default class Http {
     buildHeaders(): void;
     buildMethod(): void;
     buildUrl(options: any): string;
-    buildData(): string;
-    send(options: HttpConfig): Promise<Response>;
+    buildData(options: any): Promise<string>;
+    callPromise(funStr: string, options: HttpOptions, data: any): Promise<void>;
+    send(options: HttpConfig): Promise<{}>;
     static _config: HttpConfig;
     static config: HttpConfig;
     static _instance: Http;
-    static buildMethod(method: any, url: any, data?: {}, options?: HttpOptions, instance?: Http): Promise<Response>;
+    static buildMethod(method: any, url: any, data?: {}, options?: HttpOptions, instance?: Http): Promise<{}>;
     static create(options?: HttpOptions): {
         get(url, data?, options?: HttpOptions): Promise<Response>;
         post(url, data?, options?: HttpOptions): Promise<Response>;
@@ -25,10 +26,10 @@ export default class Http {
         head(url, data?, options?: HttpOptions): Promise<Response>;
         instance: Http;
     };
-    static get(url: any, data?: {}, options?: HttpOptions): Promise<Response>;
-    static post(url: any, data?: {}, options?: HttpOptions): Promise<Response>;
-    static delete(url: any, data?: {}, options?: HttpOptions): Promise<Response>;
-    static head(url: any, data?: {}, options?: HttpOptions): Promise<Response>;
-    static put(url: any, data?: {}, options?: HttpOptions): Promise<Response>;
-    static patch(url: any, data?: {}, options?: HttpOptions): Promise<Response>;
+    static get(url: any, data?: {}, options?: HttpOptions): Promise<{}>;
+    static post(url: any, data?: {}, options?: HttpOptions): Promise<{}>;
+    static delete(url: any, data?: {}, options?: HttpOptions): Promise<{}>;
+    static head(url: any, data?: {}, options?: HttpOptions): Promise<{}>;
+    static put(url: any, data?: {}, options?: HttpOptions): Promise<{}>;
+    static patch(url: any, data?: {}, options?: HttpOptions): Promise<{}>;
 }

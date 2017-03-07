@@ -28,7 +28,10 @@ export default class Http {
             method: 'GET',
             data: {},
             url: '/',
-            progress: function () { }
+            progress: function () { },
+            transformRequest: [],
+            transformResponse: [],
+            transformHeaders: []
         })
 
     }
@@ -52,19 +55,35 @@ export default class Http {
                this.options.url
     }
 
-    buildData() {
+    async buildData(options) {
+        await this.callPromise('transformRequest', options, this.options.data)
+
         let sendData = param(this.options.data)
 
         return sendData
     }
 
-    send(options: HttpConfig): Promise<Response> {
+    async callPromise(funStr: string, options: HttpOptions, data) {
+        if (Array.isArray(this.options[funStr])) {
+            this.options[funStr].forEach(async (promise) => {
+                await promise(data)
+            })
+        }
+
+        if (Array.isArray(options[funStr])) {
+            options[funStr].forEach(async (promise) => {
+                await promise(data)
+            })
+        }
+    }
+
+    async send(options: HttpConfig) {
         this.buildHeaders()
         this.buildMethod()
         
         let timeout = options.hasOwnProperty('timeout') ? options.timeout : this.options.timeout
         let method = this.method
-        let body = this.buildData()
+        let body = await this.buildData(options)
         let url = this.buildUrl(options)
         let headers = JSON.parse(JSON.stringify(this.headers))
 
@@ -73,6 +92,7 @@ export default class Http {
                 headers[key] = options.headers[key]
             })
         }
+        await this.callPromise('transformHeaders', options, headers)
 
         if (buildUrlMemthods.indexOf(this.method.toLocaleUpperCase()) === -1) {
             let link = url.indexOf('?') === -1 ? '?' : '&'
@@ -112,6 +132,10 @@ export default class Http {
             }, (args) => {
                 this.options.progress(args)
             })
+        }).then(async (response: Response) => {
+            await this.callPromise('transformResponse', options, response)
+
+            return response
         })
     }
 

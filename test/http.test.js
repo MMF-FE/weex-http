@@ -81,6 +81,14 @@ describe('weex-http Test', () => {
             })
         })
 
+        it('transform Response', (done) => {
+            weexHttp.get('/get', {}, {
+                transformResponse: [function(response){
+                    done()
+                }]
+            })
+        })
+
     })
 
     describe('Create instance', () => {

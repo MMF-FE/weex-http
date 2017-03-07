@@ -14,6 +14,9 @@ export interface HttpOptions {
         [key: string]: any;
     };
     url?: string;
+    transformRequest?: Function[];
+    transformHeaders?: Function[];
+    transformResponse?: Function[];
     progress?: Function;
 }
 export interface HttpConfig {
@@ -21,6 +24,9 @@ export interface HttpConfig {
     headers?: {
         [key: string]: string;
     };
+    transformRequest?: Function[];
+    transformHeaders?: Function[];
+    transformResponse?: Function[];
     baseURL?: string;
 }
 export interface Response {
