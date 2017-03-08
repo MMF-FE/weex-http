@@ -1,6 +1,6 @@
 {
   "name": "weex-http",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "simple http lib for weex",
   "devDependencies": {
     "coveralls": "^2.11.16",
