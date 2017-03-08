@@ -122,15 +122,20 @@ module.exports =
 	        return (options.hasOwnProperty('baseURL') ? options.baseURL : this.options.baseURL) +
 	            this.options.url;
 	    };
+	    Http.prototype.clone = function (data) {
+	        return JSON.parse(JSON.stringify(data));
+	    };
 	    Http.prototype.buildData = function (options) {
 	        return __awaiter(this, void 0, void 0, function () {
-	            var sendData;
+	            var data, sendData;
 	            return __generator(this, function (_a) {
 	                switch (_a.label) {
-	                    case 0: return [4 /*yield*/, this.callPromise('transformRequest', options, this.options.data)];
+	                    case 0:
+	                        data = this.clone(this.options.data);
+	                        return [4 /*yield*/, this.callPromise('transformRequest', options, data)];
 	                    case 1:
 	                        _a.sent();
-	                        sendData = util_1.param(this.options.data);
+	                        sendData = util_1.param(data);
 	                        return [2 /*return*/, sendData];
 	                }
 	            });
@@ -138,33 +143,26 @@ module.exports =
 	    };
 	    Http.prototype.callPromise = function (funStr, options, data) {
 	        return __awaiter(this, void 0, void 0, function () {
-	            var _this = this;
 	            return __generator(this, function (_a) {
-	                if (Array.isArray(this.options[funStr])) {
-	                    this.options[funStr].forEach(function (promise) { return __awaiter(_this, void 0, void 0, function () {
-	                        return __generator(this, function (_a) {
-	                            switch (_a.label) {
-	                                case 0: return [4 /*yield*/, promise(data)];
-	                                case 1:
-	                                    _a.sent();
-	                                    return [2 /*return*/];
-	                            }
-	                        });
-	                    }); });
+	                switch (_a.label) {
+	                    case 0:
+	                        if (!Array.isArray(this.options[funStr])) return [3 /*break*/, 2];
+	                        return [4 /*yield*/, Promise.all(this.options[funStr].map(function (promise) {
+	                                return promise(data);
+	                            }))];
+	                    case 1:
+	                        _a.sent();
+	                        _a.label = 2;
+	                    case 2:
+	                        if (!Array.isArray(options[funStr])) return [3 /*break*/, 4];
+	                        return [4 /*yield*/, Promise.all(options[funStr].map(function (promise) {
+	                                return promise(data);
+	                            }))];
+	                    case 3:
+	                        _a.sent();
+	                        _a.label = 4;
+	                    case 4: return [2 /*return*/, data];
 	                }
-	                if (Array.isArray(options[funStr])) {
-	                    options[funStr].forEach(function (promise) { return __awaiter(_this, void 0, void 0, function () {
-	                        return __generator(this, function (_a) {
-	                            switch (_a.label) {
-	                                case 0: return [4 /*yield*/, promise(data)];
-	                                case 1:
-	                                    _a.sent();
-	                                    return [2 /*return*/];
-	                            }
-	                        });
-	                    }); });
-	                }
-	                return [2 /*return*/];
 	            });
 	        });
 	    };
@@ -183,7 +181,7 @@ module.exports =
 	                    case 1:
 	                        body = _a.sent();
 	                        url = this.buildUrl(options);
-	                        headers = JSON.parse(JSON.stringify(this.headers));
+	                        headers = this.clone(this.headers);
 	                        if (options.headers) {
 	                            Object.keys(options.headers).forEach(function (key) {
 	                                headers[key] = options.headers[key];
@@ -192,7 +190,7 @@ module.exports =
 	                        return [4 /*yield*/, this.callPromise('transformHeaders', options, headers)];
 	                    case 2:
 	                        _a.sent();
-	                        if (buildUrlMemthods.indexOf(this.method.toLocaleUpperCase()) === -1) {
+	                        if (buildUrlMemthods.indexOf(method.toLocaleUpperCase()) === -1) {
 	                            link = url.indexOf('?') === -1 ? '?' : '&';
 	                            url += link + body;
 	                            body = '';

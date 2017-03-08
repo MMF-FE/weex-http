@@ -55,26 +55,33 @@ export default class Http {
                this.options.url
     }
 
-    async buildData(options) {
-        await this.callPromise('transformRequest', options, this.options.data)
+    clone(data) {
+        return JSON.parse(JSON.stringify(data))
+    }
 
-        let sendData = param(this.options.data)
+    async buildData(options) {
+        let data = this.clone(this.options.data)
+        await this.callPromise('transformRequest', options, data)
+
+        let sendData = param(data)
 
         return sendData
     }
 
     async callPromise(funStr: string, options: HttpOptions, data) {
         if (Array.isArray(this.options[funStr])) {
-            this.options[funStr].forEach(async (promise) => {
-                await promise(data)
-            })
+            await Promise.all(this.options[funStr].map((promise) => {
+                return promise(data)
+            }))
         }
 
         if (Array.isArray(options[funStr])) {
-            options[funStr].forEach(async (promise) => {
-                await promise(data)
-            })
+            await Promise.all(options[funStr].map((promise) => {
+                return promise(data)
+            }))
         }
+
+        return data
     }
 
     async send(options: HttpConfig) {
@@ -85,7 +92,7 @@ export default class Http {
         let method = this.method
         let body = await this.buildData(options)
         let url = this.buildUrl(options)
-        let headers = JSON.parse(JSON.stringify(this.headers))
+        let headers = this.clone(this.headers)
 
         if(options.headers) {
             Object.keys(options.headers).forEach((key) => {
@@ -94,7 +101,7 @@ export default class Http {
         }
         await this.callPromise('transformHeaders', options, headers)
 
-        if (buildUrlMemthods.indexOf(this.method.toLocaleUpperCase()) === -1) {
+        if (buildUrlMemthods.indexOf(method.toLocaleUpperCase()) === -1) {
             let link = url.indexOf('?') === -1 ? '?' : '&'
             url += link + body
             body = ''

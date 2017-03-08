@@ -10,8 +10,9 @@ export default class Http {
     buildHeaders(): void;
     buildMethod(): void;
     buildUrl(options: any): string;
+    clone(data: any): any;
     buildData(options: any): Promise<string>;
-    callPromise(funStr: string, options: HttpOptions, data: any): Promise<void>;
+    callPromise(funStr: string, options: HttpOptions, data: any): Promise<any>;
     send(options: HttpConfig): Promise<{}>;
     static _config: HttpConfig;
     static config: HttpConfig;
