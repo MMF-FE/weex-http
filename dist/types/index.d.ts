@@ -7,9 +7,9 @@ export default class Http {
     method: string;
     url: string;
     constructor(options: HttpOptions);
-    buildHeaders(): void;
-    buildMethod(): void;
-    buildUrl(options: any): string;
+    getHeaders(): any;
+    getMethod(options: any): string;
+    buildUrl(options: any): any;
     clone(data: any): any;
     buildData(options: any): Promise<string>;
     callPromise(funStr: string, options: HttpOptions, data: any): Promise<any>;

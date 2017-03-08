@@ -106,21 +106,21 @@ module.exports =
 	            transformHeaders: []
 	        });
 	    }
-	    Http.prototype.buildHeaders = function () {
-	        this.headers = util_1.setOptonsDefault(this.options.headers, {
+	    Http.prototype.getHeaders = function () {
+	        return this.clone(util_1.setOptonsDefault(this.options.headers, {
 	            'Content-Type': 'application/x-www-form-urlencoded'
-	        });
+	        }));
 	    };
-	    Http.prototype.buildMethod = function () {
-	        var method = String(this.options.method).trim().toLocaleUpperCase();
+	    Http.prototype.getMethod = function (options) {
+	        var method = String(options.method).trim().toLocaleUpperCase();
 	        if (methods.indexOf(method) === -1) {
 	            throw new Error(method + " not in " + methods.join(', '));
 	        }
-	        this.method = method;
+	        return method;
 	    };
 	    Http.prototype.buildUrl = function (options) {
 	        return (options.hasOwnProperty('baseURL') ? options.baseURL : this.options.baseURL) +
-	            this.options.url;
+	            options.url;
 	    };
 	    Http.prototype.clone = function (data) {
 	        return JSON.parse(JSON.stringify(data));
@@ -131,7 +131,7 @@ module.exports =
 	            return __generator(this, function (_a) {
 	                switch (_a.label) {
 	                    case 0:
-	                        data = this.clone(this.options.data);
+	                        data = this.clone(options.data);
 	                        return [4 /*yield*/, this.callPromise('transformRequest', options, data)];
 	                    case 1:
 	                        _a.sent();
@@ -173,15 +173,13 @@ module.exports =
 	            return __generator(this, function (_a) {
 	                switch (_a.label) {
 	                    case 0:
-	                        this.buildHeaders();
-	                        this.buildMethod();
 	                        timeout = options.hasOwnProperty('timeout') ? options.timeout : this.options.timeout;
-	                        method = this.method;
+	                        method = this.getMethod(options);
 	                        return [4 /*yield*/, this.buildData(options)];
 	                    case 1:
 	                        body = _a.sent();
 	                        url = this.buildUrl(options);
-	                        headers = this.clone(this.headers);
+	                        headers = this.getHeaders();
 	                        if (options.headers) {
 	                            Object.keys(options.headers).forEach(function (key) {
 	                                headers[key] = options.headers[key];
@@ -265,9 +263,9 @@ module.exports =
 	            }
 	            instance = this._instance;
 	        }
-	        instance.options.method = method;
-	        instance.options.data = data;
-	        instance.options.url = url;
+	        options.method = method;
+	        options.data = data;
+	        options.url = url;
 	        return instance.send(options);
 	    };
 	    Http.create = function (options) {

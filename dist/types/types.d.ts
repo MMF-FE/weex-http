@@ -24,6 +24,11 @@ export interface HttpConfig {
     headers?: {
         [key: string]: string;
     };
+    method?: string;
+    data?: {
+        [key: string]: any;
+    };
+    url?: string;
     transformRequest?: Function[];
     transformHeaders?: Function[];
     transformResponse?: Function[];

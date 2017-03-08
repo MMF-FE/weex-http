@@ -36,23 +36,23 @@ export default class Http {
 
     }
 
-    buildHeaders() {
-        this.headers = setOptonsDefault(this.options.headers, {
+    getHeaders() {
+        return this.clone(setOptonsDefault(this.options.headers, {
             'Content-Type': 'application/x-www-form-urlencoded'
-        })
+        }))
     }
 
-    buildMethod() {
-        let method = String(this.options.method).trim().toLocaleUpperCase()
+    getMethod(options) {
+        let method = String(options.method).trim().toLocaleUpperCase()
         if (methods.indexOf(method) === -1) {
             throw new Error(`${method} not in ${methods.join(', ')}`)
         }
-        this.method = method
+        return method
     }
 
     buildUrl(options) {
         return (options.hasOwnProperty('baseURL') ? options.baseURL : this.options.baseURL) + 
-               this.options.url
+               options.url
     }
 
     clone(data) {
@@ -60,7 +60,7 @@ export default class Http {
     }
 
     async buildData(options) {
-        let data = this.clone(this.options.data)
+        let data = this.clone(options.data)
         await this.callPromise('transformRequest', options, data)
 
         let sendData = param(data)
@@ -85,14 +85,12 @@ export default class Http {
     }
 
     async send(options: HttpConfig) {
-        this.buildHeaders()
-        this.buildMethod()
         
         let timeout = options.hasOwnProperty('timeout') ? options.timeout : this.options.timeout
-        let method = this.method
+        let method = this.getMethod(options)
         let body = await this.buildData(options)
         let url = this.buildUrl(options)
-        let headers = this.clone(this.headers)
+        let headers = this.getHeaders()
 
         if(options.headers) {
             Object.keys(options.headers).forEach((key) => {
@@ -177,9 +175,9 @@ export default class Http {
        
         }
         
-        instance.options.method = method
-        instance.options.data = data
-        instance.options.url = url
+        options.method = method
+        options.data = data
+        options.url = url
 
         return instance.send(options)
         
