@@ -91,6 +91,14 @@ module.exports =
 	var stream = weex.requireModule('stream');
 	var methods = ['GET', 'DELETE', 'HEAD', 'POST', 'PUT', 'PATCH'];
 	var buildUrlMemthods = ['POST', 'PUT', 'PATCH'];
+	var platform = weex.config.env.platform.toLocaleLowerCase();
+	var is = {
+	    web: platform === 'web',
+	    android: platform === 'android',
+	    iOS: platform === 'ios',
+	    ios: platform === 'ios',
+	    wechat: platform === 'web' && (/micromessenger/i).test(navigator.userAgent)
+	};
 	var Http = (function () {
 	    function Http(options) {
 	        this.options = util_1.setOptonsDefault(options, {
@@ -169,7 +177,7 @@ module.exports =
 	    Http.prototype.send = function (options) {
 	        return __awaiter(this, void 0, void 0, function () {
 	            var _this = this;
-	            var timeout, method, body, url, headers, link;
+	            var timeout, method, body, url, headers, isSend, link;
 	            return __generator(this, function (_a) {
 	                switch (_a.label) {
 	                    case 0:
@@ -188,10 +196,12 @@ module.exports =
 	                        return [4 /*yield*/, this.callPromise('transformHeaders', options, headers)];
 	                    case 2:
 	                        _a.sent();
+	                        isSend = true;
 	                        if (buildUrlMemthods.indexOf(method.toLocaleUpperCase()) === -1) {
 	                            link = url.indexOf('?') === -1 ? '?' : '&';
 	                            url += link + body;
 	                            body = '';
+	                            isSend = false;
 	                        }
 	                        return [2 /*return*/, new Promise(function (resolve, reject) {
 	                                var isReturn = false;
@@ -205,25 +215,61 @@ module.exports =
 	                                        headers: {}
 	                                    });
 	                                }, timeout);
-	                                stream.fetch({
-	                                    method: method,
-	                                    body: body,
-	                                    url: url,
-	                                    headers: headers,
-	                                    type: 'text'
-	                                }, function (response) {
-	                                    if (isReturn)
-	                                        return;
-	                                    clearTimeout(timeoutId);
-	                                    if (response.ok) {
-	                                        resolve(response);
-	                                    }
-	                                    else {
-	                                        reject(response);
-	                                    }
-	                                }, function (args) {
-	                                    _this.options.progress(args);
-	                                });
+	                                // ios8 wechat back bug
+	                                if (is.wechat) {
+	                                    var xhr_1 = new XMLHttpRequest();
+	                                    var xhrDone_1 = function () {
+	                                        clearTimeout(timeoutId);
+	                                        if (isReturn)
+	                                            return;
+	                                        if (xhr_1.status >= 200 && xhr_1.status < 300) {
+	                                            resolve({
+	                                                status: xhr_1.status,
+	                                                ok: true,
+	                                                statusText: xhr_1.statusText,
+	                                                data: xhr_1.responseText,
+	                                                headers: {}
+	                                            });
+	                                        }
+	                                    };
+	                                    var xhrOnChange = function () {
+	                                        if (xhr_1.readyState == 4) {
+	                                            // 微信你大爷
+	                                            if (!xhr_1.status) {
+	                                                window.location.reload();
+	                                                return;
+	                                            }
+	                                            xhrDone_1();
+	                                        }
+	                                    };
+	                                    xhr_1.onreadystatechange = xhrOnChange;
+	                                    xhr_1.open(method, url, true);
+	                                    Object.keys(headers).forEach(function (key) {
+	                                        xhr_1.setRequestHeader(key, headers[key]);
+	                                    });
+	                                    xhr_1.send(body);
+	                                }
+	                                else {
+	                                    stream.fetch({
+	                                        method: method,
+	                                        body: body,
+	                                        url: url,
+	                                        headers: headers,
+	                                        type: 'text'
+	                                    }, function (response) {
+	                                        clearTimeout(timeoutId);
+	                                        if (isReturn)
+	                                            return;
+	                                        if (response.ok) {
+	                                            resolve(response);
+	                                        }
+	                                        else {
+	                                            reject(response);
+	                                        }
+	                                    }, function (args) {
+	                                        _this.options.progress(args);
+	                                    });
+	                                }
 	                            }).then(function (response) { return __awaiter(_this, void 0, void 0, function () {
 	                                return __generator(this, function (_a) {
 	                                    switch (_a.label) {

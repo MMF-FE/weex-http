@@ -7,10 +7,18 @@
 
 import { setOptonsDefault, param } from './util'
 import { HttpOptions, Response, HttpConfig } from './types'
-const stream = weex.requireModule('stream')
+var stream = weex.requireModule('stream')
 
 const methods = ['GET', 'DELETE', 'HEAD', 'POST', 'PUT', 'PATCH']
 const buildUrlMemthods = ['POST', 'PUT', 'PATCH']
+const platform = weex.config.env.platform.toLocaleLowerCase()
+const is = {
+    web: platform === 'web',
+    android: platform === 'android',
+    iOS: platform === 'ios',
+    ios: platform === 'ios',
+    wechat: platform === 'web' && (/micromessenger/i).test(navigator.userAgent)
+}
 
 export default class Http {
     options: HttpOptions
@@ -98,13 +106,13 @@ export default class Http {
             })
         }
         await this.callPromise('transformHeaders', options, headers)
-
+        let isSend = true
         if (buildUrlMemthods.indexOf(method.toLocaleUpperCase()) === -1) {
             let link = url.indexOf('?') === -1 ? '?' : '&'
             url += link + body
             body = ''
+            isSend = false
         }
-
         return new Promise((resolve: Function, reject: Function) => {
             let isReturn = false
             let timeoutId = setTimeout(() => {
@@ -118,25 +126,62 @@ export default class Http {
                 })
             }, timeout)
 
-            stream.fetch({
-                method,
-                body,
-                url,
-                headers,
-                type: 'text'
-            }, (response: Response) => {
-                if (isReturn) return
-                clearTimeout(timeoutId)
-
-                if (response.ok) {
-                    resolve(response)
-                } else {
-                    reject(response)
+            // ios8 wechat back bug
+            if (is.wechat) {
+                let xhr = new XMLHttpRequest()
+                
+                let xhrDone = function () {
+                    clearTimeout(timeoutId)
+                    if (isReturn) return
+                    if(xhr.status >= 200 && xhr.status < 300) {
+                        resolve({
+                            status: xhr.status,
+                            ok: true,
+                            statusText: xhr.statusText,
+                            data: xhr.responseText,
+                            headers: {}
+                        })
+                    }
                 }
 
-            }, (args) => {
-                this.options.progress(args)
-            })
+                let xhrOnChange = function() {
+                    if(xhr.readyState == 4) {
+                        // 微信你大爷
+                        if (!xhr.status) {
+                            window.location.reload()
+                            return
+                        }                    
+                        xhrDone()
+                    }
+                }
+                xhr.onreadystatechange = xhrOnChange
+                xhr.open(method, url, true)
+                Object.keys(headers).forEach((key) => {
+                    xhr.setRequestHeader(key, headers[key])
+                })
+ 
+                xhr.send(body)
+            } else {
+                stream.fetch({
+                    method,
+                    body,
+                    url,
+                    headers,
+                    type: 'text'
+                }, (response: Response) => {
+                    clearTimeout(timeoutId)
+                    if (isReturn) return
+
+                    if (response.ok) {
+                        resolve(response)
+                    } else {
+                        reject(response)
+                    }
+
+                }, (args) => {
+                    this.options.progress(args)
+                })
+            }
         }).then(async (response: Response) => {
             await this.callPromise('transformResponse', options, response)
 
