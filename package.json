@@ -14,7 +14,7 @@
     "vue-loader": "^11.1.2",
     "vue-typescript-import-dts": "^3.0.1",
     "webpack": "1.x",
-    "weex-vue-render": "^0.10.0"
+    "weex-vue-render": "0.2.0"
   },
   "main": "dist/index.js",
   "typings": "dist/types/index.d.ts",

@@ -15,7 +15,9 @@ describe('weex-http Test', () => {
     jsdom()
 
     before(() => {
-        global.weex = require('weex-vue-render/dist')
+        var weexRender = require('weex-vue-render')
+        Vue.use(weexRender)
+        global.weex = window.weex
         weexHttp = require('../dist').default
     })
 
