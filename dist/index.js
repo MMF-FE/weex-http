@@ -236,7 +236,13 @@ module.exports =
 	                                        if (xhr_1.readyState == 4) {
 	                                            // 微信你大爷
 	                                            if (!xhr_1.status) {
-	                                                window.location.reload();
+	                                                var key = '__weex_http';
+	                                                var lastReloadDate = localStorage.getItem(key);
+	                                                var now = Date.now();
+	                                                if (lastReloadDate == null || now - Number(lastReloadDate) > 5000) {
+	                                                    localStorage.setItem(key, String(now));
+	                                                    window.location.reload();
+	                                                }
 	                                                return;
 	                                            }
 	                                            xhrDone_1();

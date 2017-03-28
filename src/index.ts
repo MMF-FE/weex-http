@@ -148,7 +148,14 @@ export default class Http {
                     if(xhr.readyState == 4) {
                         // 微信你大爷
                         if (!xhr.status) {
-                            window.location.reload()
+                            let key = '__weex_http'
+                            let lastReloadDate = localStorage.getItem(key)
+                            let now = Date.now()
+                            if (lastReloadDate == null || now - Number(lastReloadDate) > 5000) {
+                                localStorage.setItem(key, String(now))
+                                window.location.reload()
+                            }
+
                             return
                         }                    
                         xhrDone()
