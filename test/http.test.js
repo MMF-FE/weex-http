@@ -1,7 +1,7 @@
 /**
  * Test case
  * @author vfasky<vfasky@gmail.com>
- * 
+ *
  **/
 'use strict'
 
@@ -26,7 +26,7 @@ describe('weex-http Test', () => {
         it('Set config', () => {
             weexHttp.config = { baseURL: 'http://httpbin.org' }
         })
-        
+
         methods.forEach((method) => {
             let httpMethod = String(method).toLocaleLowerCase()
 
@@ -64,9 +64,9 @@ describe('weex-http Test', () => {
             })
 
             it(method + ' Object',  (done) => {
-                let args = { 
+                let args = {
                     test: {
-                        obj: ['weex-http', 'weex', 'vue'] 
+                        obj: ['weex-http', 'weex', 'vue']
                     }
                 }
                 weexHttp[httpMethod]('/' + httpMethod, args).then((res) => {
@@ -109,7 +109,7 @@ describe('weex-http Test', () => {
             it(method, (done) => {
                 let args = { test: 'weex-http' }
                 http[httpMethod](httpMethod, args).then((res) => {
-                    
+
                     let data = JSON.parse(res.data)
 
                     let resData = data.args
@@ -141,9 +141,9 @@ describe('weex-http Test', () => {
             })
 
             it(method + ' Object', (done) => {
-                let args = { 
+                let args = {
                     test: {
-                        obj: ['weex-http', 'weex', 'vue'] 
+                        obj: ['weex-http', 'weex', 'vue']
                     }
                 }
                 http[httpMethod](httpMethod, args).then((res) => {
