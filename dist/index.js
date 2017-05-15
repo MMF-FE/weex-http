@@ -43,7 +43,7 @@ module.exports =
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * http lib
@@ -60,8 +60,8 @@ module.exports =
 	    });
 	};
 	var __generator = (this && this.__generator) || function (thisArg, body) {
-	    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t;
-	    return { next: verb(0), "throw": verb(1), "return": verb(2) };
+	    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+	    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
 	    function verb(n) { return function (v) { return step([n, v]); }; }
 	    function step(op) {
 	        if (f) throw new TypeError("Generator is already executing.");
@@ -217,6 +217,8 @@ module.exports =
 	                                }, timeout);
 	                                // ios8 wechat back bug
 	                                if (is.wechat) {
+	                                    var deviceAgent = navigator.userAgent.toLowerCase();
+	                                    var isIos8_1 = /(iphone|ipod|ipad).* os 8_/.test(deviceAgent);
 	                                    var xhr_1 = new XMLHttpRequest();
 	                                    var xhrDone_1 = function () {
 	                                        clearTimeout(timeoutId);
@@ -235,7 +237,7 @@ module.exports =
 	                                    var xhrOnChange = function () {
 	                                        if (xhr_1.readyState == 4) {
 	                                            // 微信你大爷
-	                                            if (!xhr_1.status) {
+	                                            if (!xhr_1.status && isIos8_1) {
 	                                                var key = '__weex_http';
 	                                                var lastReloadDate = localStorage.getItem(key);
 	                                                var now = Date.now();
@@ -369,9 +371,9 @@ module.exports =
 	exports.default = Http;
 
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	/**
 	 * util
@@ -440,6 +442,6 @@ module.exports =
 	exports.param = param;
 
 
-/***/ }
+/***/ })
 /******/ ]);
 //# sourceMappingURL=index.js.map

@@ -1,7 +1,7 @@
 /**
  * http lib
  * @author vfasky<vfasky@gmail.com>
- * 
+ *
  **/
 'use strict'
 
@@ -59,8 +59,8 @@ export default class Http {
     }
 
     buildUrl(options) {
-        return (options.hasOwnProperty('baseURL') ? options.baseURL : this.options.baseURL) + 
-               options.url
+        return (options.hasOwnProperty('baseURL') ? options.baseURL : this.options.baseURL) +
+            options.url
     }
 
     clone(data) {
@@ -93,14 +93,14 @@ export default class Http {
     }
 
     async send(options: HttpConfig) {
-        
+
         let timeout = options.hasOwnProperty('timeout') ? options.timeout : this.options.timeout
         let method = this.getMethod(options)
         let body = await this.buildData(options)
         let url = this.buildUrl(options)
         let headers = this.getHeaders()
 
-        if(options.headers) {
+        if (options.headers) {
             Object.keys(options.headers).forEach((key) => {
                 headers[key] = options.headers[key]
             })
@@ -128,12 +128,15 @@ export default class Http {
 
             // ios8 wechat back bug
             if (is.wechat) {
+                let deviceAgent = navigator.userAgent.toLowerCase()
+                let isIos8 = /(iphone|ipod|ipad).* os 8_/.test(deviceAgent)
+
                 let xhr = new XMLHttpRequest()
-                
+
                 let xhrDone = function () {
                     clearTimeout(timeoutId)
                     if (isReturn) return
-                    if(xhr.status >= 200 && xhr.status < 300) {
+                    if (xhr.status >= 200 && xhr.status < 300) {
                         resolve({
                             status: xhr.status,
                             ok: true,
@@ -144,10 +147,10 @@ export default class Http {
                     }
                 }
 
-                let xhrOnChange = function() {
-                    if(xhr.readyState == 4) {
+                let xhrOnChange = function () {
+                    if (xhr.readyState == 4) {
                         // 微信你大爷
-                        if (!xhr.status) {
+                        if (!xhr.status && isIos8) {
                             let key = '__weex_http'
                             let lastReloadDate = localStorage.getItem(key)
                             let now = Date.now()
@@ -157,7 +160,7 @@ export default class Http {
                             }
 
                             return
-                        }                    
+                        }
                         xhrDone()
                     }
                 }
@@ -166,7 +169,7 @@ export default class Http {
                 Object.keys(headers).forEach((key) => {
                     xhr.setRequestHeader(key, headers[key])
                 })
- 
+
                 xhr.send(body)
             } else {
                 stream.fetch({
@@ -209,7 +212,7 @@ export default class Http {
     static set config(options: HttpConfig) {
         Object.keys(options).forEach((key) => {
             this._config[key] = options[key]
-            if(this._instance) {
+            if (this._instance) {
                 this._instance.options[key] = options[key]
             }
         })
@@ -218,21 +221,21 @@ export default class Http {
     static _instance: Http
 
     static buildMethod(method, url, data = {}, options: HttpOptions = {}, instance?: Http) {
-        
+
         if (!instance) {
             if (!this._instance) {
                 this._instance = new this(this.config)
             }
             instance = this._instance
-       
+
         }
-        
+
         options.method = method
         options.data = data
         options.url = url
 
         return instance.send(options)
-        
+
     }
 
     static create(options: HttpOptions = {}): {
@@ -248,12 +251,12 @@ export default class Http {
         let func: any = {
             instance
         }
-       
+
         methods.forEach((method) => {
             func[method.toLocaleLowerCase()] = (url, data = {}, options?: HttpOptions) => {
                 return this.buildMethod(method, url, data, options, instance)
             }
-        })        
+        })
 
         return func
     }
